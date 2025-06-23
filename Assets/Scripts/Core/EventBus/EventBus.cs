@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace EventSystem {
+namespace Core.EventSystem {
     public static class EventBus {
         // Thread-safe dictionary storing ordered lists of delegates for each event type
         private static readonly ConcurrentDictionary<Type, List<Delegate>> eventTable = new();
