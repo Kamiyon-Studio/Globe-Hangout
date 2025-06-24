@@ -273,7 +273,7 @@ GameObject:
   - component: {fileID: 556203005}
   - component: {fileID: 556203004}
   - component: {fileID: 556203003}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -656,10 +656,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: InputManager
       objectReference: {fileID: 0}
-    - target: {fileID: 7337242569891567226, guid: 1c23d605b6ea7e74586e48c18c0e0ea8, type: 3}
-      propertyPath: swipeThreshold
-      value: 60
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -775,6 +771,10 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 6721346419414856118, guid: c11231fdaf2a4c24aa7eaa2eaf3e416c, type: 3}
+      propertyPath: smoothTime
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6721346419414856118, guid: c11231fdaf2a4c24aa7eaa2eaf3e416c, type: 3}
       propertyPath: 'lanes.Array.data[0]'
       value: 
       objectReference: {fileID: 1386019275}
@@ -813,27 +813,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4375156809792081525, guid: dad9d6da0a5eaae43b68c871366354c8, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.8754261
+      value: -0.15038365
       objectReference: {fileID: 0}
     - target: {fileID: 4375156809792081525, guid: dad9d6da0a5eaae43b68c871366354c8, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.40821788
+      value: -0.086824045
       objectReference: {fileID: 0}
     - target: {fileID: 4375156809792081525, guid: dad9d6da0a5eaae43b68c871366354c8, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.23456968
+      value: 0.85286856
       objectReference: {fileID: 0}
     - target: {fileID: 4375156809792081525, guid: dad9d6da0a5eaae43b68c871366354c8, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.10938163
+      value: -0.4924039
       objectReference: {fileID: 0}
     - target: {fileID: 4375156809792081525, guid: dad9d6da0a5eaae43b68c871366354c8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 50
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 4375156809792081525, guid: dad9d6da0a5eaae43b68c871366354c8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -30
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 4375156809792081525, guid: dad9d6da0a5eaae43b68c871366354c8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z

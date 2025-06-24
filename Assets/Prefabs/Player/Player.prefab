@@ -156,4 +156,11 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  moveSpeed: 15
+  jumpForce: 10
+  checkDistance: 0.3
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  playerHeight: 2
+  smoothTime: 0.2
+  velocity: {x: 0, y: 0}
