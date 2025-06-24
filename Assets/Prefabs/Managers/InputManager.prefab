@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3640467669054172956}
   - component: {fileID: 1036205142657973703}
+  - component: {fileID: 7337242569891567226}
   m_Layer: 0
   m_Name: InputManager
   m_TagString: Untagged
@@ -44,4 +45,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89add0b2170a9da40b99ef47b89c8dfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  swipeThreshold: 50
+--- !u!114 &7337242569891567226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3730527595582482900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7a08ac8820be6d4fb9f3c8f9ee51910, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  swipeThreshold: 60

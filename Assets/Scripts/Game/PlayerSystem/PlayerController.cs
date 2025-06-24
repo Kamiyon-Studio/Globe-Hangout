@@ -11,9 +11,29 @@ namespace Game.PlayerSystem {
         [Header("Lanes")]
         [SerializeField] private int laneIndex = 2;
         [SerializeField] private List<Transform> lanes = new List<Transform>();
-        [SerializeField] private float moveSpeed = 10f;
 
         private Vector3 targetPos;
+
+
+
+        [Header("Jumping")]
+        [SerializeField] private float jumpForce = 10f;
+        [SerializeField] private float checkDistance = 1f;
+
+
+        [Header("Ground Check")]
+        [SerializeField] private LayerMask groundLayer;
+        [SerializeField] private float playerHeight = 2f;
+
+        private bool isGrounded = false;
+
+
+        [Header("Smoothing")]
+        [SerializeField] private float smoothTime = 0.3f;
+        [SerializeField] private Vector2 velocity = Vector2.zero;
+
+
+
         private Rigidbody rb;
 
 
@@ -30,6 +50,8 @@ namespace Game.PlayerSystem {
             else {
                 Debug.LogError("Lanes not set up properly or invalid lane index!");
             }
+
+            isGrounded = true;
         }
 
         private void OnEnable() {
@@ -46,10 +68,21 @@ namespace Game.PlayerSystem {
             EventBus.Unsubscribe<Evt_OnSwipeDown>(OnSwipeDown);
         }
 
+        private void Update() {
+            HandleGroundCheck();
+        }
+
         private void FixedUpdate() {
-            if (rb != null && Vector3.Distance(transform.position, targetPos) > 0.01f) {
-                Vector3 newPos = Vector3.MoveTowards(transform.position, targetPos, moveSpeed * Time.fixedDeltaTime);
-                rb.MovePosition(newPos);
+            if (rb != null) {
+                Vector3 currentPos = transform.position;
+                Vector2 currentXZ = new Vector2(currentPos.x, currentPos.z);
+                Vector2 targetXZ = new Vector2(targetPos.x, targetPos.z);
+
+                if (Vector2.Distance(currentXZ, targetXZ) > 0.01f) {
+                    Vector2 newPosXZ = Vector2.SmoothDamp(currentXZ, targetXZ, ref velocity, smoothTime);
+                    Vector3 newPos = new Vector3(newPosXZ.x, currentPos.y, newPosXZ.y);
+                    rb.MovePosition(newPos);
+                }
             }
         }
 
@@ -75,6 +108,8 @@ namespace Game.PlayerSystem {
 
         private void OnSwipeUp(Evt_OnSwipeUp e) {
             Debug.Log("up");
+
+            HandleJump();
         }
 
         private void OnSwipeDown(Evt_OnSwipeDown e) {
@@ -89,6 +124,16 @@ namespace Game.PlayerSystem {
                 Vector3 newTargetPos = new Vector3(lanes[laneIndex].position.x, transform.position.y, transform.position.z);
                 targetPos = newTargetPos;
             }
+        }
+
+        private void HandleJump() {
+            if (isGrounded) {
+                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            }
+        }
+
+        private void HandleGroundCheck() {
+            isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + checkDistance, groundLayer);
         }
     }
 }
