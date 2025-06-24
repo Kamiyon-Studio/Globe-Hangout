@@ -14,9 +14,5 @@ namespace Core.InputSystem {
         private void Awake() {
             swipeController = GetComponent<SwipeController>();
         }
-
-        private void Update() {
-            swipeController.RunSwipeController();
-        }
     }
 }

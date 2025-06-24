@@ -56,7 +56,7 @@ namespace Game.PlayerSystem {
 
         // ---------- Event Methods ----------
         private void OnSwipeLeft(Evt_OnSwipeLeft e) {
-            Debug.Log("Swipe left");
+            Debug.Log("left");
 
             if (laneIndex > 0) {
                 laneIndex--;
@@ -65,7 +65,7 @@ namespace Game.PlayerSystem {
         }
 
         private void OnSwipeRight(Evt_OnSwipeRight e) {
-            Debug.Log("Swipe right");
+            Debug.Log("right");
 
             if (laneIndex < lanes.Count - 1) {
                 laneIndex++;
@@ -74,11 +74,11 @@ namespace Game.PlayerSystem {
         }
 
         private void OnSwipeUp(Evt_OnSwipeUp e) {
-            Debug.Log("Swipe up");
+            Debug.Log("up");
         }
 
         private void OnSwipeDown(Evt_OnSwipeDown e) {
-            Debug.Log("Swipe down");
+            Debug.Log("down");
         }
 
 
