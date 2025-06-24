@@ -8,14 +8,12 @@ namespace Core.InputSystem {
     public class SwipeController : MonoBehaviour {
         [Header("Swipe Detection")]
         [SerializeField] private float swipeThreshold = 50f;
-        [SerializeField] private float continuousSwipeDelay = 0.3f; // Delay between continuous swipes
 
         private InputSystem_Actions inputActions;
-        private Vector2 startPos;
-        private Vector2 lastSwipePos;
+        private Vector2 startTouchPos;
+        private Vector2 endTouchPos;
 
         private bool isTouching;
-        private float lastSwipeTime;
 
         private SwipeDirection detectedDirection;
         public enum SwipeDirection {
@@ -46,65 +44,46 @@ namespace Core.InputSystem {
         // ---------- Input Event Handlers ----------
         private void TouchPress_started(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
             isTouching = true;
-            lastSwipePos = startPos;
-            lastSwipeTime = 0f;
-            startPos = inputActions.Player.TouchContact.ReadValue<Vector2>();
+            startTouchPos = inputActions.Player.TouchContact.ReadValue<Vector2>();
         }
 
         private void TouchPress_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+            if (!isTouching) return;
+
+            endTouchPos = inputActions.Player.TouchContact.ReadValue<Vector2>();
+            Vector2 swipe = endTouchPos - startTouchPos;
+
             isTouching = false;
-        }
 
-        // ---------- Swipe Detection ----------
-        private void DetectSwipe() {
-            Vector2 currentPos = inputActions.Player.TouchContact.ReadValue<Vector2>();
-            Vector2 swipeDelta = currentPos - lastSwipePos;
+            if (swipe.magnitude > swipeThreshold) {
+                Vector2 direction = swipe.normalized;
 
-            // Only consider a swipe if enough time has passed and threshold is met
-            if (Time.time - lastSwipeTime >= continuousSwipeDelay && swipeDelta.magnitude >= swipeThreshold) {
-                detectedDirection = GetSwipeDirection(swipeDelta);
-
-                if (detectedDirection != SwipeDirection.None) {
-                    switch (detectedDirection) {
-                        case SwipeDirection.Left:
-                            EventBus.Publish(new Evt_OnSwipeLeft());
-                            break;
-                        case SwipeDirection.Right:
-                            EventBus.Publish(new Evt_OnSwipeRight());
-                            break;
-                        case SwipeDirection.Up:
-                            EventBus.Publish(new Evt_OnSwipeUp());
-                            break;
-                        case SwipeDirection.Down:
-                            EventBus.Publish(new Evt_OnSwipeDown());
-                            break;
-                    }
-
-                    lastSwipePos = currentPos;
-                    lastSwipeTime = Time.time;
+                if (Math.Abs(direction.x) > Math.Abs(direction.y)) {
+                    detectedDirection = direction.x > 0 ? SwipeDirection.Right : SwipeDirection.Left;
                 }
-            } else {
-                detectedDirection = SwipeDirection.None;
-            }
-        }
-
-
-        private SwipeDirection GetSwipeDirection(Vector2 swipeDelta) {
-            // Determine if horizontal or vertical swipe is dominant
-            if (Mathf.Abs(swipeDelta.x) > Mathf.Abs(swipeDelta.y)) {
-                // Horizontal swipe
-                return swipeDelta.x > 0 ? SwipeDirection.Right : SwipeDirection.Left;
+                else {
+                    detectedDirection = direction.y > 0 ? SwipeDirection.Up : SwipeDirection.Down;
+                }
             }
             else {
-                // Vertical swipe
-                return swipeDelta.y > 0 ? SwipeDirection.Up : SwipeDirection.Down;
+                detectedDirection = SwipeDirection.None;
             }
-        }
 
-        // ---------- Helper Functions ----------
-        public void RunSwipeController() {
-            if (isTouching) {
-                DetectSwipe();
+            switch (detectedDirection) {
+                case SwipeDirection.Left:
+                    EventBus.Publish(new Evt_OnSwipeLeft());
+                    break;
+                case SwipeDirection.Right:
+                    EventBus.Publish(new Evt_OnSwipeRight());
+                    break;
+                case SwipeDirection.Up:
+                    EventBus.Publish(new Evt_OnSwipeUp());
+                    break;
+                case SwipeDirection.Down:
+                    EventBus.Publish(new Evt_OnSwipeDown());
+                    break;
+                default:
+                    break;
             }
         }
     }
