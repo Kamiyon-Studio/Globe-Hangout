@@ -22,6 +22,13 @@ namespace Game.PlayerSystem {
             EventBus.Subscribe<Evt_OnSwipeDown>(OnSwipeDown);
         }
 
+        private void OnDisable() {
+            EventBus.Unsubscribe<Evt_OnSwipeLeft>(OnSwipeLeft);
+            EventBus.Unsubscribe<Evt_OnSwipeRight>(OnSwipeRight);
+            EventBus.Unsubscribe<Evt_OnSwipeUp>(OnSwipeUp);
+            EventBus.Unsubscribe<Evt_OnSwipeDown>(OnSwipeDown);
+        }
+
 
         // ---------- Event Methods ----------
         private void OnSwipeLeft(Evt_OnSwipeLeft e) {
