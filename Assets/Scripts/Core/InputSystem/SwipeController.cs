@@ -69,6 +69,7 @@ namespace Core.InputSystem {
                 detectedDirection = SwipeDirection.None;
             }
 
+            
             switch (detectedDirection) {
                 case SwipeDirection.Left:
                     EventBus.Publish(new Evt_OnSwipeLeft());

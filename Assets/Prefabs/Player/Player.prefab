@@ -156,11 +156,12 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  jumpForce: 10
+  jumpForce: 8
   checkDistance: 0.3
+  fallMultiplier: 5
   groundLayer:
     serializedVersion: 2
     m_Bits: 256
   playerHeight: 2
-  smoothTime: 0.2
+  smoothTime: 0.15
   velocity: {x: 0, y: 0}

@@ -15,10 +15,10 @@ namespace Game.PlayerSystem {
         private Vector3 targetPos;
 
 
-
         [Header("Jumping")]
         [SerializeField] private float jumpForce = 10f;
         [SerializeField] private float checkDistance = 1f;
+        [SerializeField] private float fallMultiplier = 2.5f;
 
 
         [Header("Ground Check")]
@@ -31,7 +31,6 @@ namespace Game.PlayerSystem {
         [Header("Smoothing")]
         [SerializeField] private float smoothTime = 0.3f;
         [SerializeField] private Vector2 velocity = Vector2.zero;
-
 
 
         private Rigidbody rb;
@@ -74,66 +73,132 @@ namespace Game.PlayerSystem {
 
         private void FixedUpdate() {
             if (rb != null) {
-                Vector3 currentPos = transform.position;
-                Vector2 currentXZ = new Vector2(currentPos.x, currentPos.z);
-                Vector2 targetXZ = new Vector2(targetPos.x, targetPos.z);
-
-                if (Vector2.Distance(currentXZ, targetXZ) > 0.01f) {
-                    Vector2 newPosXZ = Vector2.SmoothDamp(currentXZ, targetXZ, ref velocity, smoothTime);
-                    Vector3 newPos = new Vector3(newPosXZ.x, currentPos.y, newPosXZ.y);
-                    rb.MovePosition(newPos);
-                }
+                HandleLaneSwitching();
+                HandleFalling();
             }
         }
 
 
         // ---------- Event Methods ----------
+
+
+        /// <summary>
+        /// Handles the player jumping
+        /// </summary>
+        /// <param name="e"></param>
         private void OnSwipeLeft(Evt_OnSwipeLeft e) {
             Debug.Log("left");
 
             if (laneIndex > 0) {
                 laneIndex--;
-                MoveToLane();
+                MoveToTargetLane();
             }
         }
 
+
+        /// <summary>
+        /// Handles the player jumping
+        /// </summary>
+        /// <param name="e"></param>
         private void OnSwipeRight(Evt_OnSwipeRight e) {
             Debug.Log("right");
 
             if (laneIndex < lanes.Count - 1) {
                 laneIndex++;
-                MoveToLane();
+                MoveToTargetLane();
             }
         }
 
+
+        /// <summary>
+        /// Handles the player jumping
+        /// </summary>
+        /// <param name="e"></param>
         private void OnSwipeUp(Evt_OnSwipeUp e) {
             Debug.Log("up");
 
             HandleJump();
         }
 
+
+        /// <summary>
+        /// Handles the player sliding
+        /// </summary>
+        /// <param name="e"></param>
         private void OnSwipeDown(Evt_OnSwipeDown e) {
             Debug.Log("down");
+
+            HandleSlide();
         }
 
 
         // ---------- Methods ----------
 
-        private void MoveToLane() {
+
+        /// <summary>
+        /// Handles the player lane switching smoothly
+        /// </summary>
+        private void HandleLaneSwitching() {
+            Vector3 currentPos = transform.position;
+            Vector2 currentXZ = new Vector2(currentPos.x, currentPos.z);
+            Vector2 targetXZ = new Vector2(targetPos.x, targetPos.z);
+
+            if (Vector2.Distance(currentXZ, targetXZ) > 0.01f) {
+                Vector2 newPosXZ = Vector2.SmoothDamp(currentXZ, targetXZ, ref velocity, smoothTime);
+                Vector3 newPos = new Vector3(newPosXZ.x, currentPos.y, newPosXZ.y);
+                rb.MovePosition(newPos);
+            }
+        }
+
+
+        /// <summary>
+        /// Moves the player to the current lane
+        /// </summary>
+        private void MoveToTargetLane() {
             if (lanes.Count > 0 && laneIndex < lanes.Count) {
                 Vector3 newTargetPos = new Vector3(lanes[laneIndex].position.x, transform.position.y, transform.position.z);
                 targetPos = newTargetPos;
             }
         }
 
+
+        /// <summary>
+        /// Handles the player jumping
+        /// </summary>
         private void HandleJump() {
             if (isGrounded) {
                 rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             }
         }
 
+
+        /// <summary>
+        /// Handles the player falling
+        /// </summary>
+        private void HandleFalling() {
+            if (rb.linearVelocity.y < 0) {
+                // Falling - stronger gravity
+                rb.linearVelocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
+            }
+            else if (rb.linearVelocity.y > 0 && rb.linearVelocity.y < 2f) {
+                // Near peak - slight extra gravity for less floatiness
+                rb.linearVelocity += Vector3.up * Physics.gravity.y * 0.5f * Time.deltaTime;
+            }
+        }
+
+
+        /// <summary>
+        /// Checks if the player is on the ground
+        /// </summary>
         private void HandleGroundCheck() {
             isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + checkDistance, groundLayer);
+        }
+
+
+        private void HandleSlide() {
+            if (!isGrounded) {
+                rb.AddForce(Vector3.down * (jumpForce * 1.5f), ForceMode.Impulse);
+            }
         }
     }
 }
