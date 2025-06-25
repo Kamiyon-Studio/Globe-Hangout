@@ -1,9 +1,9 @@
-using UnityEngine;
-using System.Collections.Generic;
-
 using Core.EventSystem;
 using Core.InputSystem.Events;
+
+using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Game.PlayerSystem {
     public class PlayerController : MonoBehaviour {
@@ -242,6 +242,7 @@ namespace Game.PlayerSystem {
 
 
         }
+
 
         private IEnumerator SlideCoroutine() {
             isSliding = true;
