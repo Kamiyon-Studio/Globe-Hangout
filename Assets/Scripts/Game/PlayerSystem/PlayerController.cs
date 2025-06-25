@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using Core.EventSystem;
 using Core.InputSystem.Events;
+using System.Collections;
 
 namespace Game.PlayerSystem {
     public class PlayerController : MonoBehaviour {
@@ -28,18 +29,32 @@ namespace Game.PlayerSystem {
         private bool isGrounded = false;
 
 
+        [Header("Sliding")]
+        [SerializeField] private float slideForce = 10f;
+        [SerializeField] private float slideTime = 1f;
+
+        private float originalHeight;
+        private Vector3 originalCenter;
+        private float originalRadius;
+        private Coroutine slideRoutine;
+
+        private bool isSliding = false;
+
+
         [Header("Smoothing")]
         [SerializeField] private float smoothTime = 0.3f;
         [SerializeField] private Vector2 velocity = Vector2.zero;
 
 
         private Rigidbody rb;
+        private CapsuleCollider col;
 
 
         // ---------- Lifecycle ----------
 
         private void Awake() {
             rb = GetComponent<Rigidbody>();
+            col = GetComponent<CapsuleCollider>();
         }
 
         private void Start() {
@@ -51,6 +66,10 @@ namespace Game.PlayerSystem {
             }
 
             isGrounded = true;
+
+            originalHeight = col.height;
+            originalCenter = col.center;
+            originalRadius = col.radius;
         }
 
         private void OnEnable() {
@@ -140,8 +159,9 @@ namespace Game.PlayerSystem {
         /// </summary>
         private void HandleLaneSwitching() {
             Vector3 currentPos = transform.position;
+            Vector3 targetLanePos = lanes[laneIndex].position;
             Vector2 currentXZ = new Vector2(currentPos.x, currentPos.z);
-            Vector2 targetXZ = new Vector2(targetPos.x, targetPos.z);
+            Vector2 targetXZ = new Vector2(targetLanePos.x, targetLanePos.z);
 
             if (Vector2.Distance(currentXZ, targetXZ) > 0.01f) {
                 Vector2 newPosXZ = Vector2.SmoothDamp(currentXZ, targetXZ, ref velocity, smoothTime);
@@ -156,8 +176,8 @@ namespace Game.PlayerSystem {
         /// </summary>
         private void MoveToTargetLane() {
             if (lanes.Count > 0 && laneIndex < lanes.Count) {
-                Vector3 newTargetPos = new Vector3(lanes[laneIndex].position.x, transform.position.y, transform.position.z);
-                targetPos = newTargetPos;
+                Vector3 laneWorldPos = lanes[laneIndex].position;
+                targetPos = new Vector3(laneWorldPos.x, transform.position.y, laneWorldPos.z);
             }
         }
 
@@ -167,7 +187,15 @@ namespace Game.PlayerSystem {
         /// </summary>
         private void HandleJump() {
             if (isGrounded) {
+                if (isSliding) { 
+                    isSliding = false;
+                    if (slideRoutine != null) {
+                        StopCoroutine("SlideCoroutine");
+                    }
+                    ResetCollider();
+                }
                 rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+
             }
         }
 
@@ -197,8 +225,45 @@ namespace Game.PlayerSystem {
 
         private void HandleSlide() {
             if (!isGrounded) {
-                rb.AddForce(Vector3.down * (jumpForce * 1.5f), ForceMode.Impulse);
+                rb.AddForce(Vector3.down * (slideForce * 1.5f), ForceMode.Impulse);
+                StartCoroutine(SlideCoroutine());
             }
+            else if (!isSliding && isGrounded) {
+                if (isSliding) {
+                    isSliding = false;
+                    if (slideRoutine != null) {
+                        StopCoroutine("SlideCoroutine");
+                    }
+                    ResetCollider();
+                }
+
+                StartCoroutine(SlideCoroutine());
+            }
+
+
+        }
+
+        private IEnumerator SlideCoroutine() {
+            isSliding = true;
+
+            // Lower collider to "crouch" height
+            col.height = originalHeight / 2f;
+            col.center = originalCenter - new Vector3(0, originalHeight / 4f, 0);
+            col.radius = originalRadius / 2f;
+
+
+            // Wait for duration
+            yield return new WaitForSeconds(slideTime);
+
+            ResetCollider();
+            isSliding = false;
+        }
+
+
+        private void ResetCollider() {
+            col.height = originalHeight;
+            col.center = originalCenter;
+            col.radius = originalRadius;
         }
     }
 }
