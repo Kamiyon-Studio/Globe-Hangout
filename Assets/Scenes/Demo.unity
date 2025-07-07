@@ -2315,6 +2315,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Road Segment
       objectReference: {fileID: 0}
+    - target: {fileID: 8431376584187611258, guid: d0c81f37eff5e7c4c9adf000328e3d98, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8431376584187611258, guid: d0c81f37eff5e7c4c9adf000328e3d98, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 76da3b4df17fb634f915d44325a1c5e4, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2390,6 +2398,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 235202119}
     m_Modifications:
+    - target: {fileID: 5399045076287835420, guid: e2b4d2af5c173fd459c8e72b636780b1, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5399045076287835420, guid: e2b4d2af5c173fd459c8e72b636780b1, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 76da3b4df17fb634f915d44325a1c5e4, type: 2}
     - target: {fileID: 8332081127927069558, guid: e2b4d2af5c173fd459c8e72b636780b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: -56.550224
