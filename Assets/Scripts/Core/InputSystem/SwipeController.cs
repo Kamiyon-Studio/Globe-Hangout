@@ -15,6 +15,9 @@ namespace Core.InputSystem {
 
         private bool isTouching;
 
+        // Development vars
+        private Vector3 moveDir;
+
         private SwipeDirection detectedDirection;
         public enum SwipeDirection {
             None,
@@ -33,12 +36,25 @@ namespace Core.InputSystem {
             inputActions.Enable();
             inputActions.Player.TouchPress.started += TouchPress_started;
             inputActions.Player.TouchPress.canceled += TouchPress_canceled;
+
+            // Development Test
+            inputActions.Player.W.performed += On_W_Button;
+            inputActions.Player.A.performed += On_A_Button;
+            inputActions.Player.S.performed += On_S_Button;
+            inputActions.Player.D.performed += On_D_Button;
+
         }
 
         private void OnDisable() {
             inputActions.Disable();
             inputActions.Player.TouchPress.started -= TouchPress_started;
             inputActions.Player.TouchPress.canceled -= TouchPress_canceled;
+
+            // Development Test
+            inputActions.Player.W.performed -= On_W_Button;
+            inputActions.Player.A.performed -= On_A_Button;
+            inputActions.Player.S.performed -= On_S_Button;
+            inputActions.Player.D.performed -= On_D_Button;
         }
 
         // ---------- Input Event Handlers ----------
@@ -69,7 +85,7 @@ namespace Core.InputSystem {
                 detectedDirection = SwipeDirection.None;
             }
 
-            
+
             switch (detectedDirection) {
                 case SwipeDirection.Left:
                     EventBus.Publish(new Evt_OnSwipeLeft());
@@ -86,6 +102,23 @@ namespace Core.InputSystem {
                 default:
                     break;
             }
+        }
+
+        // ---------- Development Test Methods ----------
+        private void On_W_Button(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+            EventBus.Publish(new Evt_OnSwipeUp());
+        }
+
+        private void On_S_Button(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+            EventBus.Publish(new Evt_OnSwipeDown());
+        }
+
+        private void On_A_Button(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+            EventBus.Publish(new Evt_OnSwipeLeft());
+        }
+
+        private void On_D_Button(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+            EventBus.Publish(new Evt_OnSwipeRight());
         }
     }
 }
