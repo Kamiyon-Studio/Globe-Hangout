@@ -1749,10 +1749,6 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 6721346419414856118, guid: c11231fdaf2a4c24aa7eaa2eaf3e416c, type: 3}
-      propertyPath: lanes.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 6721346419414856118, guid: c11231fdaf2a4c24aa7eaa2eaf3e416c, type: 3}
       propertyPath: 'lanes.Array.data[0]'
       value: 
       objectReference: {fileID: 1128441875}

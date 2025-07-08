@@ -163,7 +163,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   playerHeight: 2
-  slideForce: 10
+  slideForce: 20
   slideTime: 0.5
-  smoothTime: 0.05
+  smoothTime: 0.08
   velocity: {x: 0, y: 0}

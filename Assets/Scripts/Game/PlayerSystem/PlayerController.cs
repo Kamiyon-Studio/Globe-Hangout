@@ -165,7 +165,7 @@ namespace Game.PlayerSystem {
 
             if (Vector2.Distance(currentXZ, targetXZ) > 0.01f) {
                 Vector2 newPosXZ = Vector2.SmoothDamp(currentXZ, targetXZ, ref velocity, smoothTime);
-                Vector3 newPos = new Vector3(newPosXZ.x, currentPos.y, newPosXZ.y);
+                Vector3 newPos = new Vector3(newPosXZ.x, rb.position.y, newPosXZ.y);
                 rb.MovePosition(newPos);
             }
         }
