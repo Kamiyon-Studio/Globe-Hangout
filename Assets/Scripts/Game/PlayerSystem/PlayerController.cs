@@ -12,6 +12,7 @@ namespace Game.PlayerSystem {
         [Header("Lanes")]
         [SerializeField] private int laneIndex = 2;
         [SerializeField] private List<Transform> lanes = new List<Transform>();
+        [SerializeField] private float laneSwitchSpeed = 10f;
 
         private Vector3 targetPos;
 
@@ -41,9 +42,9 @@ namespace Game.PlayerSystem {
         private bool isSliding = false;
 
 
-        [Header("Smoothing")]
-        [SerializeField] private float smoothTime = 0.3f;
-        [SerializeField] private Vector2 velocity = Vector2.zero;
+        //[Header("Smoothing")]
+        //[SerializeField] private float smoothTime = 0.3f;
+        //[SerializeField] private Vector2 velocity = Vector2.zero;
 
 
         private Rigidbody rb;
@@ -158,14 +159,13 @@ namespace Game.PlayerSystem {
         /// Handles the player lane switching smoothly
         /// </summary>
         private void HandleLaneSwitching() {
-            Vector3 currentPos = transform.position;
-            Vector3 targetLanePos = lanes[laneIndex].position;
-            Vector2 currentXZ = new Vector2(currentPos.x, currentPos.z);
-            Vector2 targetXZ = new Vector2(targetLanePos.x, targetLanePos.z);
+            if (lanes == null || laneIndex >= lanes.Count) return;
 
-            if (Vector2.Distance(currentXZ, targetXZ) > 0.01f) {
-                Vector2 newPosXZ = Vector2.SmoothDamp(currentXZ, targetXZ, ref velocity, smoothTime);
-                Vector3 newPos = new Vector3(newPosXZ.x, rb.position.y, newPosXZ.y);
+            Vector3 currentPos = rb.position;
+            Vector3 target = new Vector3(lanes[laneIndex].position.x, currentPos.y, lanes[laneIndex].position.z);
+
+            if (Vector3.Distance(currentPos, target) > 0.01f) {
+                Vector3 newPos = Vector3.MoveTowards(currentPos, target, laneSwitchSpeed * Time.fixedDeltaTime);
                 rb.MovePosition(newPos);
             }
         }
@@ -177,7 +177,7 @@ namespace Game.PlayerSystem {
         private void MoveToTargetLane() {
             if (lanes.Count > 0 && laneIndex < lanes.Count) {
                 Vector3 laneWorldPos = lanes[laneIndex].position;
-                targetPos = new Vector3(laneWorldPos.x, transform.position.y, laneWorldPos.z);
+                targetPos = new Vector3(laneWorldPos.x, rb.position.y, laneWorldPos.z);
             }
         }
 
