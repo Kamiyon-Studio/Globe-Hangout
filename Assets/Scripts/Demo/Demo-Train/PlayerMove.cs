@@ -1,6 +1,7 @@
 using UnityEngine;
 using Core.EventSystem;
 using Core.InputSystem.Events;
+using Demo.Train.Events;
 using System.Collections;
 
 namespace Demo.Train {
@@ -13,13 +14,23 @@ namespace Demo.Train {
 
         private bool reachedTarget = false;
         private bool isMoving = false;
-        private bool shouldRotate = false; // New flag to control rotation
+        private bool shouldRotate = false;
+
+        private bool PlayAnimation = false;
+
+
         private Transform currentTarget;
+        private Animator animator;
+
+        private void Awake() {
+            animator = GetComponent<Animator>();
+        }
 
         private void Start() {
+            PlayAnimation = true;
             currentTarget = targetPos;
             isMoving = true;
-            shouldRotate = false; // Don't rotate for the initial target
+            shouldRotate = false;
         }
 
         private void OnEnable() {
@@ -36,20 +47,25 @@ namespace Demo.Train {
             if (isMoving && !reachedTarget) {
                 MovePlayerToTarget(currentTarget);
             }
+
+            if (PlayAnimation) {
+                animator.speed = 1f;
+            }
+            else {
+                animator.speed = 0f;
+            }
         }
 
         private void OnLeftInput(Evt_OnSwipeLeft e) {
-            // Only allow input after reaching the first target
             if (reachedTarget) {
                 StartCoroutine(OnLeftInputCoroutine());
             }
         }
 
         private void OnRightInput(Evt_OnSwipeRight e) {
-            // Only allow input after reaching the first target
             if (reachedTarget) {
                 StartCoroutine(OnRightInputCoroutine());
-                
+
             }
         }
 
@@ -58,8 +74,9 @@ namespace Demo.Train {
 
             currentTarget = leftTrainPos;
             isMoving = true;
-            shouldRotate = true; // Enable rotation for direction changes
+            shouldRotate = true;
             reachedTarget = false;
+            PlayAnimation = true;
         }
 
         private IEnumerator OnRightInputCoroutine() {
@@ -67,8 +84,10 @@ namespace Demo.Train {
 
             currentTarget = rightTrainPos;
             isMoving = true;
-            shouldRotate = true; // Enable rotation for direction changes
+            shouldRotate = true;
             reachedTarget = false;
+            PlayAnimation = true;
+
         }
 
         private void MovePlayerToTarget(Transform target) {
@@ -103,6 +122,10 @@ namespace Demo.Train {
 
                 if (target == targetPos) {
                     reachedTarget = true;
+                    PlayAnimation = false;
+
+                    EventBus.Publish(new Evt_OnPlayerArrived());
+                    EventBus.Publish(new Evt_ActivateArrowUI(true));
                     Debug.Log("Reached the target");
                 }
             }

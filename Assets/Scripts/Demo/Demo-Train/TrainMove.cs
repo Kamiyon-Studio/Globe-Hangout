@@ -1,5 +1,8 @@
 using UnityEngine;
 
+using Core.EventSystem;
+using Demo.Train.Events;
+
 namespace Demo.Train {
     public class TrainMove : MonoBehaviour {
         [SerializeField] private Transform targetPos;
@@ -7,6 +10,20 @@ namespace Demo.Train {
         [SerializeField] private float slowDownDistance = 10f;
 
         private bool canMove = true;
+        //private bool arriving = true;
+        //private bool leaving = false;
+
+        private void OnEnable() {
+            EventBus.Subscribe<Evt_OnPlayerArrived>(OnPlayerArrived);
+        }
+
+        private void OnDisable() {
+            EventBus.Unsubscribe<Evt_OnPlayerArrived>(OnPlayerArrived);
+        }
+
+        private void OnPlayerArrived(Evt_OnPlayerArrived e) {
+            canMove = true;
+        }
 
         private void Update() {
             if (!canMove || targetPos == null) return;
