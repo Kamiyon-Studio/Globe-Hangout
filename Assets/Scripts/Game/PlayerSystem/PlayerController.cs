@@ -42,9 +42,9 @@ namespace Game.PlayerSystem {
         private bool isSliding = false;
 
 
-        //[Header("Smoothing")]
-        //[SerializeField] private float smoothTime = 0.3f;
-        //[SerializeField] private Vector2 velocity = Vector2.zero;
+        [Header("Smoothing")]
+        [SerializeField] private float smoothTime = 0.3f;
+        [SerializeField] private Vector2 velocity = Vector2.zero;
 
 
         private Rigidbody rb;
