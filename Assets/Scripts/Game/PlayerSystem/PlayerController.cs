@@ -43,7 +43,7 @@ namespace Game.PlayerSystem {
 
         [Header("Smoothing")]
         [SerializeField] private float smoothTime = 0.3f;
-        [SerializeField] private Vector2 velocity = Vector2.zero;
+        [SerializeField] private Vector3 velocity = Vector3.zero;
 
 
         private Rigidbody rb;
@@ -158,16 +158,17 @@ namespace Game.PlayerSystem {
         /// Handles the player lane switching smoothly
         /// </summary>
         private void HandleLaneSwitching() {
-            Vector3 currentPos = transform.position;
-            Vector3 targetLanePos = lanes[laneIndex].position;
-            Vector2 currentXZ = new Vector2(currentPos.x, currentPos.z);
-            Vector2 targetXZ = new Vector2(targetLanePos.x, targetLanePos.z);
+            // Target position on the horizontal plane of the lane
+            Vector3 targetLanePos = new Vector3(lanes[laneIndex].position.x, transform.position.y, lanes[laneIndex].position.z);
 
-            if (Vector2.Distance(currentXZ, targetXZ) > 0.01f) {
-                Vector2 newPosXZ = Vector2.SmoothDamp(currentXZ, targetXZ, ref velocity, smoothTime);
-                Vector3 newPos = new Vector3(newPosXZ.x, currentPos.y, newPosXZ.y);
-                rb.MovePosition(newPos);
-            }
+            // Use SmoothDamp to find a new position
+            Vector3 smoothedPosition = Vector3.SmoothDamp(transform.position, targetLanePos, ref velocity, smoothTime);
+
+            // Calculate the velocity needed to get to that smoothed position in the next fixed timestep
+            Vector3 desiredVelocity = (smoothedPosition - transform.position) / Time.fixedDeltaTime;
+
+            // Apply the calculated velocity, but keep the rigidbody's original vertical velocity
+            rb.linearVelocity = new Vector3(desiredVelocity.x, rb.linearVelocity.y, desiredVelocity.z);
         }
 
 
