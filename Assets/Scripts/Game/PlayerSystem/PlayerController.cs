@@ -44,7 +44,7 @@ namespace Game.PlayerSystem {
 
         [Header("Smoothing")]
         [SerializeField] private float smoothTime = 0.3f;
-        [SerializeField] private Vector2 velocity = Vector2.zero;
+        [SerializeField] private Vector3 velocity = Vector3.zero;
 
 
         private Rigidbody rb;
@@ -159,16 +159,19 @@ namespace Game.PlayerSystem {
         /// Handles the player lane switching smoothly
         /// </summary>
         private void HandleLaneSwitching() {
-            if (lanes == null || laneIndex >= lanes.Count) return;
+            // Target position on the horizontal plane of the lane
+            Vector3 targetLanePos = new Vector3(lanes[laneIndex].position.x, transform.position.y, lanes[laneIndex].position.z);
 
-            Vector3 currentPos = rb.position;
-            Vector3 target = new Vector3(lanes[laneIndex].position.x, currentPos.y, lanes[laneIndex].position.z);
+            // Use SmoothDamp to find a new position
+            Vector3 smoothedPosition = Vector3.SmoothDamp(transform.position, targetLanePos, ref velocity, smoothTime);
 
-            if (Vector3.Distance(currentPos, target) > 0.01f) {
-                Vector3 newPos = Vector3.MoveTowards(currentPos, target, laneSwitchSpeed * Time.fixedDeltaTime);
-                rb.MovePosition(newPos);
-            }
+            // Calculate the velocity needed to get to that smoothed position in the next fixed timestep
+            Vector3 desiredVelocity = (smoothedPosition - transform.position) / Time.fixedDeltaTime;
+
+            // Apply the calculated velocity, but keep the rigidbody's original vertical velocity
+            rb.linearVelocity = new Vector3(desiredVelocity.x, rb.linearVelocity.y, desiredVelocity.z);
         }
+
 
 
         /// <summary>
@@ -187,7 +190,7 @@ namespace Game.PlayerSystem {
         /// </summary>
         private void HandleJump() {
             if (isGrounded) {
-                if (isSliding) { 
+                if (isSliding) {
                     isSliding = false;
                     if (slideRoutine != null) {
                         StopCoroutine("SlideCoroutine");
